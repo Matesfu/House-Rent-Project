@@ -1,5 +1,5 @@
 const User= require('../../model/User')
-const {NotFoundError, ServerError, BadRequestError, UnauthenticatedError}= require('../../errors')
+const {NotFoundError, ServerError, BadRequestError, UnauthenticatedError, ForbiddenError}= require('../../errors')
 const {StatusCodes}= require('http-status-codes')
 
 const getProfile= async (req, res)=>{
@@ -98,8 +98,41 @@ const updateProfile = async (req, res) => {
       throw new ServerError('Something went wrong while deleting the account');
     }
   };
+const setLandlord= async (req, res)=>{
+  try {
+    const userId= req.user?.userId
+    if(!userId){
+      throw new UnauthenticatedError('user not authenticated')
+    }
+    const user= await User.findById(userId)
+    if(!user){
+      throw new NotFoundError('user not found')
+    }
+    if(user.role === 'landlord'){
+      throw new BadRequestError('You are already landlord, you can post your property')
+    }
+    const hasPaid= user.paymentStatus === 'completed';
+    if(hasPaid){
+      throw new ForbiddenError('payment is required to become a landlord.')
+    }
+    user.role= 'landlord'
+    await user.save()
 
+    res.status(StatusCodes.OK).json({msg: 'your account has successfully upgraded to landlord', 
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      }
+    })
+
+  } catch (error) {
+    console.error('error upgrading to landlord: ', error)
+    throw new ServerError('Internal server error')
+  }
+}
 
 module.exports= {
-    getProfile, updateProfile, updatePassword, deleteAccount
+    getProfile, updateProfile, updatePassword, deleteAccount, setLandlord
 }

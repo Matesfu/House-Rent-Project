@@ -43,6 +43,16 @@ const userSchema= new mongoose.Schema({
         default: 'renter'
     },
     profile : profileSchema,
+    paymentStatus: {
+        type: String,
+        enum: ['notPaid', 'paid'],
+        default: 'notPaid'
+    },
+    postCount: {
+        type: Number,
+        enum: [0, 1, 2],
+        default: 0
+    }
 
 
 
@@ -67,6 +77,16 @@ userSchema.methods.createJWT= function (){
 }
 userSchema.methods.getName= function(){
     return this.name
+}
+userSchema.methods.postController= async function(){
+ if(this.postCount === 2){
+    this.postCount-=1
+ }
+ else if(this.postCount === 1){
+    this.postCount-=1
+    this.role= 'renter'
+ }
+ return this.postCount
 }
 
 module.exports= mongoose.model('User', userSchema)
