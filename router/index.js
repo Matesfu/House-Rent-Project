@@ -6,4 +6,5 @@ router.use('/auth', require('./auth/auth.router'))
 router.use('/profile', authenticateUser, require('./profile/profile.router'))
 router.use('/user', require('./user/user.router'))
 router.use('/property', require('./property/property.router'))
+router.use('/book', authenticateUser, require('./book/book.router'))
 module.exports= router

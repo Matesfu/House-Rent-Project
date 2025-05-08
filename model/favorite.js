@@ -1,16 +1,17 @@
 const mongoose= require('mongoose')
 
-const bookSchema= new mongoose.Schema({
+const favoriteSchema= new mongoose.Schema({
     userId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
         required: [true, 'please provide user']
     },
-    propertyId: {
+    propertyIds: [
+        {
         type: mongoose.Types.ObjectId,
         ref: 'Properties',
-        required: [true, 'property Id is not provided']
-    },
+        }
+    ],
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'cancelled'],
@@ -19,4 +20,4 @@ const bookSchema= new mongoose.Schema({
 }, {timestamps: true})
 
 
-module.exports= mongoose.model('booking', bookSchema)
+module.exports= mongoose.model('Favorite', favoriteSchema)

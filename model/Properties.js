@@ -37,6 +37,12 @@ const propertySchema= new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User',
         required: [true, 'Please provide user']
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active',
+      select: false
     }
 
 }, {timestamps: true})
@@ -50,6 +56,8 @@ propertySchema.pre('save', function(next) {
     next();
   });
 
-
+  propertySchema.query.activeOnly = function () {
+    return this.where({ status: 'active' });
+  };
 
 module.exports= mongoose.model('properties', propertySchema)
