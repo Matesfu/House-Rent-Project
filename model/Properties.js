@@ -60,4 +60,4 @@ propertySchema.pre('save', function(next) {
     return this.where({ status: 'active' });
   };
 
-module.exports= mongoose.model('properties', propertySchema)
+module.exports= mongoose.model('Properties', propertySchema)

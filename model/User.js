@@ -86,6 +86,7 @@ userSchema.methods.postController= async function(){
     this.postCount-=1
     this.role= 'renter'
  }
+ await this.save()
  return this.postCount
 }
 

@@ -1,5 +1,6 @@
 const {NotFoundError, ServerError, BadRequestError, UnauthenticatedError, ForbiddenError}= require('../../errors')
 const {StatusCodes}= require('http-status-codes')
+const checkErrorInst= require('../../middleware/check-error-instance')
 const Favorite= require('../../model/favorite')
 const Properties= require('../../model/Properties')
 
@@ -18,9 +19,12 @@ const getFavoriteProperty= async (req, res)=>{
        }
        res.status(StatusCodes.OK).json({
         msg: 'Favorite properties retrieved successfully',
-        properties: favoriteDoc.propertyIds
+        properties: favoriteProp.propertyIds
       })
     } catch (error) {
+        if (checkErrorInst(error)){
+                    throw error
+                } 
         console.error('Error fetching favorite properties:', error);
         throw new ServerError('Failed to retrieve favorite properties'); 
     }
@@ -28,7 +32,7 @@ const getFavoriteProperty= async (req, res)=>{
 const removeFavoriteProperty= async (req, res)=>{
     try {
         const userId= req.user?.userId
-        const propertyId= req.params.propertyId
+        const propertyId= req.params.id
         if (!userId) {
             throw new UnauthenticatedError('User not authenticated');
           }
@@ -45,9 +49,12 @@ const removeFavoriteProperty= async (req, res)=>{
 
         res.status(StatusCodes.OK).json({
             msg: 'Property removed from favorites successfully',
-            propertyIds: favoriteDoc.propertyIds,
+            propertyIds: favorite.propertyIds,
           });
     } catch (error) {
+        if (checkErrorInst(error)){
+                    throw error
+                } 
         console.error('Error removing favorite property:', error);
         throw new ServerError('Failed to remove property from favorites');  
     }
@@ -103,6 +110,9 @@ const addToFavorite= async (req, res)=>{
           propertyIds: favoriteDoc.propertyIds,
         });
       } catch (error) {
+        if (checkErrorInst(error)){
+                    throw error
+                } 
         console.error('Error adding property to favorites:', error);
         throw new ServerError('Failed to add property to favorites');
       } 

@@ -6,7 +6,7 @@ const s3 = require('../../utils/minioClient');
 const authenticateUser= require('../../middleware/authentication')
 const {getAllProperty, createProperty, getPropertyWithID, updateProperty, 
     inactivateProperty, uploadImages, activateProperty, getOwnProperty, 
-    deleteImageFromProperty}= require('./property.controller')
+    deleteImageFromProperty, allProperty}= require('./property.controller')
 
 const propertyRouter= express.Router()
 const bucketName = 'images'
@@ -27,7 +27,8 @@ const upload = multer({
 
 propertyRouter.route('/').get(getAllProperty).post(authenticateUser, createProperty)
 propertyRouter.route('/own_property').get(authenticateUser, getOwnProperty)
-propertyRouter.route('/:id').get(getPropertyWithID).patch(updateProperty).delete(inactivateProperty).patch(activateProperty)
+propertyRouter.route('/:id').get(getPropertyWithID).patch(authenticateUser, updateProperty)
+propertyRouter.route('/status/:id').delete(authenticateUser, inactivateProperty).patch(authenticateUser, activateProperty)
 propertyRouter.route('/images/:id').post(authenticateUser, upload.array('images', 5), uploadImages).delete(authenticateUser, deleteImageFromProperty)
 
 module.exports= propertyRouter
